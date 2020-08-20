@@ -19,6 +19,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## 6 Generación del informe 
 
+## 7 Presentación de los resultados
+
 
 
 
