@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Mayker Elizondo-b12337-Lab1</title>
+
+<script src="Mayker-Elizondo´-B12337-Lab1_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="Mayker-Elizondo´-B12337-Lab1_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="Mayker-Elizondo´-B12337-Lab1_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="Mayker-Elizondo´-B12337-Lab1_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="Mayker-Elizondo´-B12337-Lab1_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="Mayker-Elizondo´-B12337-Lab1_files/navigation-1.1/tabsets.js"></script>
+<link href="Mayker-Elizondo´-B12337-Lab1_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="Mayker-Elizondo´-B12337-Lab1_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Mayker Elizondo-b12337-Lab1</h1>
+
+</div>
+
+
+<p>Librerias utilizadas</p>
+<pre class="r"><code>suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(sf))
+suppressPackageStartupMessages(library(mapview))
+suppressPackageStartupMessages(library(sp))
+suppressPackageStartupMessages(library(rgdal))
+suppressPackageStartupMessages(library(raster))
+suppressPackageStartupMessages(library(rgeos))
+suppressPackageStartupMessages(library(stars))
+suppressPackageStartupMessages(library(spData))
+suppressPackageStartupMessages(library(spDataLarge))
+suppressPackageStartupMessages(library(tmap))
+suppressPackageStartupMessages(library(leaflet)) 
+suppressPackageStartupMessages(library(ggplot2) )
+library(rmarkdown)</code></pre>
+<div id="ejercicio-capitulo-1--" class="section level1">
+<h1>Ejercicio capitulo 1 —————————————————-</h1>
+<p><strong>1-Leer el shapefile storms_xyz_feature del directorio en el sf paquete</strong></p>
+<pre class="r"><code>system.file(&quot;shape/storms_xyz_feature.shp&quot;, package=&quot;sf&quot;) %&gt;% read_sf() -&gt; storms_xyz_feature</code></pre>
+<p><strong>2-Copie este archivo en otro directorio de su computadora y lealo desde alla (nota: un shapefile consta de mas de un archivo!)</strong></p>
+<pre class="r"><code>storms_xyz_feature1=  st_zm(storms_xyz_feature)
+
+st_write(storms_xyz_feature1, &quot;C:/Users/User/Documents/Mayker/Maestria Profesional/Estadistica Espacial/SP1649-1120-NI/storms_xyz_feature1.shp&quot;)
+
+storms_xyz_feature1 = st_read(&quot;C:/Users/User/Documents/Mayker/Maestria Profesional/Estadistica Espacial/SP1649-1120-NI/storms_xyz_feature1.shp&quot;)</code></pre>
+<p><strong>3-¿Cuántas características contiene este conjunto de datos?</strong></p>
+<p>Destaca por ser un archivo con figuras tipo “Lenetring”, el bbox es de xmin:-102.2, ymin:8.3, xmax:0 ymax:59. Además posee una variable adicional llmada Z</p>
+<pre class="r"><code>storms_xyz_feature</code></pre>
+<pre><code>## Simple feature collection with 71 features and 1 field
+## geometry type:  LINESTRING
+## dimension:      XYZ
+## bbox:           xmin: -102.2 ymin: 8.3 xmax: 0 ymax: 59.5
+## z_range:        zmin: 924 zmax: 1017
+## CRS:            NA
+## # A tibble: 71 x 2
+##    Track                                                                geometry
+##    &lt;chr&gt;                                                            &lt;LINESTRING&gt;
+##  1 TONY    Z (-50.8 20.1 1011, -51.2 20.4 1011, -51.5 20.8 1010, -51.7 21.3 100~
+##  2 SANDY   Z (-77.4 14.3 1006, -77.8 13.9 1005, -78.2 13.5 1003, -78.6 13.1 100~
+##  3 RAFAEL  Z (-62.7 14.7 1006, -63.2 15 1007, -63.7 15.3 1006, -63.8 15.6 1006,~
+##  4 PATTY   Z (-72.5 25.5 1012, -72.4 25.4 1010, -72.2 25.4 1009, -72.2 25.5 100~
+##  5 OSCAR   Z (-38 12.4 1008, -38.7 13.6 1008, -39.6 15 1007, -40.5 16.3 1006, -~
+##  6 NADINE  Z (-38 15.5 1008, -39.4 15.6 1007, -40.8 15.8 1007, -41.9 16 1007, -~
+##  7 MICHAEL Z (-36.7 28.9 1015, -37.9 28.1 1015, -39.2 27.2 1015, -40.1 26.4 101~
+##  8 LESLIE  Z (-27.4 12.9 1010, -29.6 13 1010, -31.7 13.1 1009, -33.7 13.2 1009,~
+##  9 KIRK    Z (-43.4 23.9 1007, -44.5 24 1004, -45.5 24.3 1003, -46.3 24.6 1001,~
+## 10 JOYCE   Z (-31.7 10.7 1011, -33.1 11.1 1011, -34.5 11.5 1011, -35.8 12.1 100~
+## # ... with 61 more rows</code></pre>
+<p><strong>4-Grafique el conjunto de datos con axes = TRUE(pista: antes de graficar, canalice st_zm para soltar las coordenadas Z y M; mas sobre esto en el capitulo 3 ).</strong></p>
+<pre class="r"><code>d=st_zm(storms_xyz_feature)
+
+d %&gt;%  plot(graticule = TRUE, axes = TRUE)</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-5-1.png" /><!-- --></p>
+<p><strong>5-Antes de graficar, canalice el conjunto de datos st_set_crs(4326). A que se debe lo diferente en la trama obtenida?</strong></p>
+<pre class="r"><code>d=st_zm(storms_xyz_feature)
+
+   d %&gt;% 
+  st_set_crs(4326) %&gt;%
+  plot(graticule = TRUE, axes = TRUE)</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-6-1.png" /><!-- --></p>
+<p>con el comando st_zm lo que se hizo fue eliminar la variable z y con st_set_crs(4326) se hace proyecta y se observa la altitud y latitud*</p>
+</div>
+<div id="ejercicio-capitulo-2--" class="section level1">
+<h1>Ejercicio capitulo 2 —————————————————-</h1>
+<p><strong>convertir el (x,y) puntos (10,2), (-10,-2),(10,-2) y (0,10) a coordenadas polares (10,2)</strong></p>
+<pre class="r"><code>x=10
+y=2
+
+r1=sqrt((x^2)+(y^2) )
+a=atan((y/x))
+a=((a*180)/pi)
+
+cor &lt;- cbind(r1,a);cor</code></pre>
+<pre><code>##            r1        a
+## [1,] 10.19804 11.30993</code></pre>
+<p>(-10,-2)</p>
+<pre class="r"><code>x=-10
+y=-2
+
+r1=sqrt((x^2)+(y^2) )
+a=atan((y/x))
+a=((a*180)/pi) 
+cor &lt;- cbind(r1,a);cor</code></pre>
+<pre><code>##            r1        a
+## [1,] 10.19804 11.30993</code></pre>
+<p>(10,-2)</p>
+<pre class="r"><code>x=10
+y=-2
+
+r1=sqrt((x^2)+(y^2) )
+a=atan((y/x))
+a=((a*180)/pi)  
+cor &lt;- cbind(r1,a);cor</code></pre>
+<pre><code>##            r1         a
+## [1,] 10.19804 -11.30993</code></pre>
+<p>(0,10)</p>
+<pre class="r"><code>x=0
+y=10
+
+r1=sqrt((x^2)+(y^2) )
+a=atan((y/x))
+a=((a*180)/pi)
+cor &lt;- cbind(r1,a);cor</code></pre>
+<pre><code>##      r1  a
+## [1,] 10 90</code></pre>
+<p><strong>convertir los puntos polares (r,a) (10,45),(0,100),(5,359) as coordenadas cortecianas</strong></p>
+<p>x=r cos(a) y=r sin(a)</p>
+<p>(10,45)</p>
+<pre class="r"><code>r=10
+a=45
+
+ar=(a*pi)/180
+
+x=r*cos(ar)
+y=r*sin(ar)
+corde &lt;- cbind(x,y);corde</code></pre>
+<pre><code>##             x        y
+## [1,] 7.071068 7.071068</code></pre>
+<p>(0,100)</p>
+<pre class="r"><code>r=0
+a=100
+
+ar=(a*pi)/180
+
+x=r*cos(ar)
+y=r*sin(ar)
+corde &lt;- cbind(x,y);corde</code></pre>
+<pre><code>##      x y
+## [1,] 0 0</code></pre>
+<p>(5,359)</p>
+<pre class="r"><code>r=5
+a=359
+
+ar=(a*pi)/180
+
+x=r*cos(ar)
+y=r*sin(ar)
+corde &lt;- cbind(x,y);corde </code></pre>
+<pre><code>##             x           y
+## [1,] 4.999238 -0.08726203</code></pre>
+<p><strong>• suponiendo que la Tierra es una esfera con un radio de 6371 km, calcule para (λ,ϕ)(λ,ϕ) señala la distancia del gran círculo entre (10,10)(10,10) y (11,10)(11,10), Entre (10,80)(10,80) y (11,80)(11,80), Entre (10,10)(10,10) y (10,11)(10,11) y entre (10,80)(10,80) y (10,81)(10,81)(unidades: grado). ¿Cuáles son las unidades de distancia?</strong></p>
+<p>la distancia es está en milles de radianes</p>
+<pre class="r"><code>r=6371
+
+l1=10
+a1=10
+
+l2=11
+a2=10
+
+a1r=(a1*pi)/180
+l1r=(l1*pi)/180
+
+a2r=(a2*pi)/180
+l2r=(l2*pi)/180
+
+a12=acos( (sin(a1r)*sin(a2r))+((cos(a1r)*cos(a2r))*cos(l1r-l2r)))
+
+a12=((a12*180)/pi) 
+d=(a12*r)/1000
+d</code></pre>
+<pre><code>## [1] 6.274208</code></pre>
+<p>(10,80) y (11,80)</p>
+<pre class="r"><code>l1=10
+a1=80
+
+l2=11
+a2=80
+
+a1r=(a1*pi)/180
+l1r=(l1*pi)/180
+
+a2r=(a2*pi)/180
+l2r=(l2*pi)/180
+
+
+
+a12=acos( (sin(a1r)*sin(a2r))+((cos(a1r)*cos(a2r))*cos(l1r-l2r)))
+d=(a12*r)/1000
+d</code></pre>
+<pre><code>## [1] 0.01930856</code></pre>
+<p>(10,10) y (10,11)</p>
+<pre class="r"><code>l1=10
+a1=10
+
+l2=10
+a2=11
+
+a1r=(a1*pi)/180
+l1r=(l1*pi)/180
+
+a2r=(a2*pi)/180
+l2r=(l2*pi)/180
+
+
+
+a12=acos( (sin(a1r)*sin(a2r))+((cos(a1r)*cos(a2r))*cos(l1r-l2r)))
+d=(a12*r)/1000
+d</code></pre>
+<pre><code>## [1] 0.1111949</code></pre>
+<p>(10,80) y (10,81)</p>
+<pre class="r"><code>l1=10
+a1=80
+
+l2=10
+a2=81
+
+a1r=(a1*pi)/180
+l1r=(l1*pi)/180
+
+a2r=(a2*pi)/180
+l2r=(l2*pi)/180
+
+
+
+a12=acos( (sin(a1r)*sin(a2r))+((cos(a1r)*cos(a2r))*cos(l1r-l2r)))
+d=(a12*r)/1000
+d</code></pre>
+<pre><code>## [1] 0.1111949</code></pre>
+</div>
+<div id="ejercicio-4.4" class="section level1">
+<h1>Ejercicio 4.4 ———————————————————–</h1>
+<p><strong>NDVI, indice de vegetacion diferenciado normalizado, se calcula como (NIR-R) / (NIR + R), siendo NIR el infrarrojo cercano y R la banda roja. Lea el L7_ETMs.tif archivo en el objeto xy distribuya las dimensiones de la banda sobre los atributos por split(x, “band”). Luego, calcule el NDVI usando una expresiÃ³n que use los atributos NIR (banda 4) y R (banda 3) directamente.</strong></p>
+<pre class="r"><code>tif = system.file(&quot;tif/L7_ETMs.tif&quot;, package = &quot;stars&quot;)
+x = read_stars(tif)
+x</code></pre>
+<pre><code>## stars object with 3 dimensions and 1 attribute
+## attribute(s):
+##   L7_ETMs.tif    
+##  Min.   :  1.00  
+##  1st Qu.: 54.00  
+##  Median : 69.00  
+##  Mean   : 68.91  
+##  3rd Qu.: 86.00  
+##  Max.   :255.00  
+## dimension(s):
+##      from  to  offset delta                       refsys point values    
+## x       1 349  288776  28.5 UTM Zone 25, Southern Hem... FALSE   NULL [x]
+## y       1 352 9120761 -28.5 UTM Zone 25, Southern Hem... FALSE   NULL [y]
+## band    1   6      NA    NA                           NA    NA   NULL</code></pre>
+<pre class="r"><code>plot(x)</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-18-1.png" /><!-- --></p>
+<pre class="r"><code>xx=split(x, &quot;band&quot;)
+resultado_ndvi= (xx[4]-xx[3])/(xx[4]+xx[3])
+resultado_ndvi</code></pre>
+<pre><code>## stars object with 2 dimensions and 1 attribute
+## attribute(s):
+##       X4           
+##  Min.   :-0.75342  
+##  1st Qu.:-0.20301  
+##  Median :-0.06870  
+##  Mean   :-0.06432  
+##  3rd Qu.: 0.18667  
+##  Max.   : 0.58667  
+## dimension(s):
+##   from  to  offset delta                       refsys point values    
+## x    1 349  288776  28.5 UTM Zone 25, Southern Hem... FALSE   NULL [x]
+## y    1 352 9120761 -28.5 UTM Zone 25, Southern Hem... FALSE   NULL [y]</code></pre>
+<pre class="r"><code>plot(resultado_ndvi)</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-19-1.png" /><!-- --></p>
+<p><strong>Calcule NDVI para la imagen S2, usando st_applyy una funcion ndvi = function(x) (x[4]-x[3])/(x[4]+x[3]). Trace el resultado y escriba el resultado en un GeoTIFF. Explique la diferencia en tiempo de ejecuciÃ³n entre trazar y escribir.</strong></p>
+<pre class="r"><code>ndvi = function(x) (x[4]-x[3])/(x[4]+x[3])
+resultado_dos=st_apply(x, c(&quot;x&quot;, &quot;y&quot;), ndvi)
+resultado_dos</code></pre>
+<pre><code>## stars object with 2 dimensions and 1 attribute
+## attribute(s):
+##      ndvi          
+##  Min.   :-0.75342  
+##  1st Qu.:-0.20301  
+##  Median :-0.06870  
+##  Mean   :-0.06432  
+##  3rd Qu.: 0.18667  
+##  Max.   : 0.58667  
+## dimension(s):
+##   from  to  offset delta                       refsys point values    
+## x    1 349  288776  28.5 UTM Zone 25, Southern Hem... FALSE   NULL [x]
+## y    1 352 9120761 -28.5 UTM Zone 25, Southern Hem... FALSE   NULL [y]</code></pre>
+<pre class="r"><code>plot(resultado_dos)</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-20-1.png" /><!-- --> se guarda el resultado</p>
+<pre class="r"><code>write_stars(resultado_dos, &quot;C:/Users/User/Documents/Mayker/Maestria Profesional/Estadistica Espacial/resultado_dos.tif&quot;)</code></pre>
+<p><strong>1. Utilice st_transform para transformar el starsobjeto leido L7_ETMs.tifen EPSG 4326. Imprima el objeto. ¿Es esta una cuadricula regular? Grafique la primera banda usando argumentos axes=TRUEy border=NA, y explique por quÃ© esto lleva tanto tiempo.</strong></p>
+<pre class="r"><code>new = st_crs(4326)
+y = st_transform(x, new)
+y</code></pre>
+<pre><code>## stars object with 3 dimensions and 1 attribute
+## attribute(s):
+##   L7_ETMs.tif    
+##  Min.   :  1.00  
+##  1st Qu.: 54.00  
+##  Median : 69.00  
+##  Mean   : 68.91  
+##  3rd Qu.: 86.00  
+##  Max.   :255.00  
+## dimension(s):
+##      from  to offset delta refsys point                          values    
+## x       1 349     NA    NA WGS 84 FALSE [349x352] -34.9165,...,-34.8261 [x]
+## y       1 352     NA    NA WGS 84 FALSE  [349x352] -8.0408,...,-7.94995 [y]
+## band    1   6     NA    NA     NA    NA                            NULL    
+## curvilinear grid</code></pre>
+<p>-despues de hacer la transformacion se tiene como resultado una figura curvilinea. -cuando convertimos o transformamos datos tipo raster regular en otro sistema de referencia de coordenadas, se volverá curvilineo a menos que volvamos a muestrear; el remuestreo siempre se realiza a costa de alguna pérrdida de datos y no es reversible</p>
+<p>Grafico de la primer banda</p>
+<pre class="r"><code>#plot(y)
+yy=split(y, &quot;band&quot;)
+plot(yy[1], axes=TRUE, border=NA)</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-23-1.png" /><!-- --></p>
+<p>Toma mucho tiempo porque los datos de tif/L7_ETMs.tif son tipo raster y al aplicarle una transformación le estamos cambiando a otro sistema de coordenadas lo que genera perdida de datos.</p>
+<p>-tilice st_warppara deformar el L7_ETMs.tif a un objeto a EPSG 4326 y graficar el objeto resultante con axes=TRUE. ¿Por que el grafico se crea mucho mas rapido que con st_transform?</p>
+<pre class="r"><code>new = st_crs(4326)
+y2 = st_warp(x, crs = new)
+
+plot(y2, axes=TRUE, border=NA)</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-24-1.png" /><!-- --></p>
+<p><strong>La expresionn st_warp realiza el metodo de remuestreo del vecino mas cercano (metodo = “cerca”), que es el predeterminado,con st_warp vuelvo a una figura regular, pero hay perdida de informacion </strong></p>
+</div>
+<div id="ejercicio-capitulo-6--" class="section level1">
+<h1>Ejercicio capitulo 6 —————————————————-</h1>
+<p>Agregue una variable al ncconjunto de datos mediante nc$State = “North Carolina”. ¿Que valor deberia adjuntar a esta variable para la relacion atributo-geometrica (agr)?</p>
+<pre class="r"><code>nc &lt;- system.file(&quot;gpkg/nc.gpkg&quot;, package=&quot;sf&quot;) %&gt;%
+   read_sf() %&gt;%
+   st_transform(32119)
+
+plot(nc)</code></pre>
+<pre><code>## Warning: plotting the first 10 out of 14 attributes; use max.plot = 14 to plot
+## all</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-25-1.png" /><!-- --></p>
+<pre class="r"><code>nc$State = &quot;North Carolina&quot;</code></pre>
+<p>La variable STATE se debe agregar de manera con identity, ya que es una variables que identifica a la geometria como un todo</p>
+<p>Cree un nuevo sf objeto a partir de la geometria obtenida por st_union(nc) y asigne “North Carolina”a la variable State. Â¿que AGR puede asignar ahora a esta variable de atributo?</p>
+<pre class="r"><code># nc10 &lt;- nc %&gt;% select(BIR74, SID74, State) %&gt;%
+#    st_set_agr(c(BIR74 = &quot;aggregate&quot;, SID74 = &quot;aggregate&quot;, State = &quot;identity&quot;))
+# 
+# plot(nc10)
+# </code></pre>
+<p><strong>Cree un nuevo sf objeto a partir de la geometria obtenida por st_union(nc) y asigne “North Carolina”a la variable State. Â¿que AGR puede asignar ahora a esta variable de atributo?</strong></p>
+<pre class="r"><code>vv=st_union(nc)
+vvv=vv %&gt;% st_sf()
+vvvv=vvv%&gt;%st_transform(32119)
+vvvv$State = &quot;North Carolina&quot;
+plot(vvvv)</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-27-1.png" /><!-- --></p>
+<pre class="r"><code>vv1=st_union(nc, by_feature=TRUE)
+vvv1=vv1 %&gt;% st_sf()
+vvvv1=vvv1%&gt;%st_transform(32119)
+vvvv1$State = &quot;North Carolina&quot;
+plot(vvvv1)</code></pre>
+<pre><code>## Warning: plotting the first 10 out of 15 attributes; use max.plot = 15 to plot
+## all</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-28-1.png" /><!-- --></p>
+<p>Esa variable se puede agregar como identity, ya que no cambia para las geometrias</p>
+<p><strong>use st_area para agregar una variable con nombre area a nc. Compare las variables area y AREA en el conjunto de datos nc. ¿Cuáles son las unidades de AREA? ¿Están relacionados linealmente las dos variables? Si hay discrepancias, ¿cuál podría ser la causa?</strong></p>
+<pre class="r"><code>d=st_area(nc)
+
+nc$area_cal=d
+
+nc1 &lt;- head(cbind(nc$AREA, nc$area_cal, round ((nc$area_cal/10000000000),3) ) )
+nc1</code></pre>
+<pre><code>##       [,1]       [,2]  [,3]
+## [1,] 0.114 1137590142 0.114
+## [2,] 0.061  611196991 0.061
+## [3,] 0.143 1423728763 0.142
+## [4,] 0.070  694661115 0.069
+## [5,] 0.153 1520991764 0.152
+## [6,] 0.097  967855261 0.097</code></pre>
+<p>La variable AREA parece estar dividida entre 10 000 000 000, ya que al dividirla entra esa cifra da muy similar a la variable de la base de datos</p>
+<p><strong>¿La areavariable es intensiva o extensiva? ¿Es su agr igual a constanta, identidad aggregate?</strong></p>
+<p>la variable area es extensica Ademas se puede agragar con un tipo agregado</p>
+<p><strong>Busque el nombre del condado que contiene POINT(-78.34046 35.017)</strong></p>
+<pre class="r"><code>nc_4326 &lt;- system.file(&quot;gpkg/nc.gpkg&quot;, package=&quot;sf&quot;) %&gt;%
+   read_sf() %&gt;%
+   st_transform(4326)
+
+punto&lt;- st_point( c( -78.34046, 35.017 ) )
+res &lt;- st_contains(nc_4326, punto)</code></pre>
+<pre><code>## although coordinates are longitude/latitude, st_contains assumes that they are planar</code></pre>
+<pre class="r"><code>res &lt;- summary(res) 
+res_1 &lt;- as.numeric( res[,1])
+pos &lt;- which( res_1==1 )
+nc_4326$NAME[pos]</code></pre>
+<pre><code>## [1] &quot;Sampson&quot;</code></pre>
+<p><strong>Busque los nombres de todos los condados con limites que tocan el Sampson</strong></p>
+<pre class="r"><code>sampson_geo &lt;- nc_4326$geom[pos]
+#res_2 &lt;- st_intersection(nc_4326, sampson_geo)
+res_2 &lt;- st_intersection(nc_4326, sampson_geo)</code></pre>
+<pre><code>## although coordinates are longitude/latitude, st_intersection assumes that they are planar</code></pre>
+<pre><code>## Warning: attribute variables are assumed to be spatially constant throughout all
+## geometries</code></pre>
+<pre class="r"><code>res_2 &lt;- res_2[ res_2$NAME!=&#39;Sampson&#39;,    ]; res_2$NAME</code></pre>
+<pre><code>## [1] &quot;Johnston&quot;   &quot;Wayne&quot;      &quot;Harnett&quot;    &quot;Cumberland&quot; &quot;Duplin&quot;    
+## [6] &quot;Bladen&quot;     &quot;Pender&quot;</code></pre>
+<p><strong>Enumere los nombres de todos los condados que se encuentran a menos de 50 km del condado Sampson.</strong></p>
+<pre class="r"><code>res_3 &lt;- st_is_within_distance(nc_4326, sampson_geo, dist = 50000)
+res_3 &lt;- summary(res_3) 
+res_3 &lt;- as.numeric( res_3[,1])
+pos &lt;- which( res_3==1 )
+nc_4326$NAME[pos]</code></pre>
+<pre><code>##  [1] &quot;Wake&quot;        &quot;Chatham&quot;     &quot;Wilson&quot;      &quot;Johnston&quot;    &quot;Greene&quot;     
+##  [6] &quot;Lee&quot;         &quot;Wayne&quot;       &quot;Harnett&quot;     &quot;Moore&quot;       &quot;Lenoir&quot;     
+## [11] &quot;Sampson&quot;     &quot;Cumberland&quot;  &quot;Jones&quot;       &quot;Hoke&quot;        &quot;Duplin&quot;     
+## [16] &quot;Onslow&quot;      &quot;Robeson&quot;     &quot;Bladen&quot;      &quot;Pender&quot;      &quot;Columbus&quot;   
+## [21] &quot;New Hanover&quot; &quot;Brunswick&quot;</code></pre>
+</div>
+<div id="ejercicio-8" class="section level1">
+<h1>Ejercicio 8 ———————————————————–</h1>
+<pre class="r"><code>africa = world %&gt;% 
+   filter(continent == &quot;Africa&quot;, !is.na(iso_a2)) %&gt;% 
+   left_join(worldbank_df, by = &quot;iso_a2&quot;) %&gt;% 
+   dplyr::select(name, subregion, gdpPercap, HDI, pop_growth) %&gt;% 
+   st_transform(&quot;+proj=aea +lat_1=20 +lat_2=-23 +lat_0=0 +lon_0=25&quot;)
+
+zion = st_read((system.file(&quot;vector/zion.gpkg&quot;, package = &quot;spDataLarge&quot;)))</code></pre>
+<pre><code>## Reading layer `zion&#39; from data source `C:\Users\User\Documents\R\win-library\4.0\spDataLarge\vector\zion.gpkg&#39; using driver `GPKG&#39;
+## Simple feature collection with 1 feature and 11 fields
+## geometry type:  POLYGON
+## dimension:      XY
+## bbox:           xmin: 302903.1 ymin: 4112244 xmax: 334735.5 ymax: 4153087
+## projected CRS:  UTM Zone 12, Northern Hemisphere</code></pre>
+<pre class="r"><code>data(nlcd, package = &quot;spDataLarge&quot;)</code></pre>
+<p><strong>Cree un mapa que muestre la distribución geográfica del Índice de Desarrollo Humano ( HDI) en África con gráficos base (pista: uso plot()) y paquetes tmap (pista: uso tm_shape(africa) …).</strong></p>
+<p>Algunos otros mapas paquetes que se puede usar son:</p>
+<p>ggplot2:2<br />
+googleway</p>
+<p>tmap: Thematic Maps</p>
+<p>rasterVis:Visualization Methods for Raster Data</p>
+<pre class="r"><code># Uso de plot
+#plot(africa)
+plot(africa[4])</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-34-1.png" /><!-- --></p>
+<pre class="r"><code>#plot(st_geometry(africa) , col = africa$HDI)</code></pre>
+<p>Uso de tm_shape</p>
+<pre class="r"><code>tm_shape(africa)+ tm_fill(col = &quot;HDI&quot;)</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-35-1.png" /><!-- --></p>
+<p><strong>Extienda el tmap creado para el ejercicio anterior para que la leyenda tenga tres bins: “Alto” (por HDIencima de 0,7), “Medio” ( HDIentre 0,55 y 0,7) y “Bajo” ( HDIpor debajo de 0,55).</strong> <strong>• Bonificación: mejore la estética del mapa, por ejemplo, cambiando el título de la leyenda, las etiquetas de clase y la paleta de colores.</strong></p>
+<pre class="r"><code>africa = africa %&gt;% mutate(rango_HDI=case_when(HDI&lt;0.55~&#39;bajo&#39;,
+                                               HDI&gt;=0.55 &amp; HDI&lt;0.7  ~&#39;medio&#39;,
+                                               HDI&gt;0.7 ~&#39;alto&#39;,
+                                               TRUE~&#39;nd&#39;))
+
+
+map1=tm_shape(africa)+ tm_fill(col = &quot;rango_HDI&quot;)+tm_style(&quot;classic&quot;) + tm_layout(title = &quot;Africa por nivel de HDI&quot;) +tm_layout(scale = 2)
+map1</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-36-1.png" /><!-- --> <strong>Represente africa en las subregiones en el mapa. Cambie la paleta de colores predeterminada y el título de la leyenda. A continuación, combine este mapa y el mapa creado en el ejercicio anterior en un solo gráfico.</strong></p>
+<pre class="r"><code>map2=tm_shape(africa)+ tm_fill(col = &quot;subregion&quot;, palette = &quot;BuGn&quot;) + tm_layout(title = &quot;Africa por subregiones&quot;)
+map2                   </code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-37-1.png" /><!-- --></p>
+<pre class="r"><code>tmap_arrange(map1, map2)</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-38-1.png" /><!-- --> #4-Crea un mapa de cobertura terrestre del Parque Nacional Zion.</p>
+<pre class="r"><code>plot(zion)</code></pre>
+<pre><code>## Warning: plotting the first 10 out of 11 attributes; use max.plot = 11 to plot
+## all</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-39-1.png" /><!-- --></p>
+<pre class="r"><code>#tm_shape(zion)+tm_fill()+tm_fill()</code></pre>
+<p><strong>Cree mapas de facetas de países de África oriental:</strong> <strong>• Con una faceta que muestra el IDH y la otra que representa el crecimiento de la población (pista: usando variables HDIy pop_growth, respectivamente)</strong> <strong>• Con un ‘múltiplo pequeño’ por país</strong></p>
+<pre class="r"><code>africa_Oriental=africa %&gt;% filter(subregion==&#39;Eastern Africa&#39;)
+
+africa_Oriental_HDI=africa_Oriental
+africa_Oriental_HDI$faceta=&#39;HDI&#39;
+africa_Oriental_HDI$indicador=africa_Oriental_HDI$HDI
+
+africa_Oriental_popg=africa_Oriental
+africa_Oriental_popg$faceta=&#39;pop_growth&#39;
+africa_Oriental_popg$indicador=africa_Oriental_popg$pop_growth
+
+
+d=rbind(africa_Oriental_HDI,africa_Oriental_popg)
+
+
+
+tm_shape(africa_Oriental) +
+   tm_polygons()+
+   tm_shape(d)+
+   tm_symbols(col = &quot;black&quot;, border.col = &quot;white&quot;, size =c(&quot;indicador&quot;) )+
+   tm_facets(by = &quot;faceta&quot;, nrow = 2, free.coords = TRUE)</code></pre>
+<p><img src="Mayker-Elizondo´-B12337-Lab1_files/figure-html/unnamed-chunk-40-1.png" /><!-- --></p>
+<p><strong>Crea un mapa interactivo de África:</strong> <strong>• Con tmap</strong> <strong>• Con mapview</strong> <strong>• Con folleto</strong> <strong>• Bonificación: para cada enfoque, agregue una leyenda (si no se proporciona automáticamente) y una barra de escala</strong></p>
+<p>Con tmap</p>
+<pre class="r"><code>map0=tm_shape(africa)+ tm_fill(col = &quot;subregion&quot;)
+
+tmap_mode(&quot;view&quot;)
+map0</code></pre>
+<p>Con mapview</p>
+<pre class="r"><code>mapview::mapview(africa)</code></pre>
+<p>con leaflet</p>
+<pre class="r"><code>pal = colorNumeric(&quot;RdYlBu&quot;, domain = africa$HDI)
+
+leaflet(data = africa)%&gt;% 
+   addProviderTiles(providers$CartoDB.Positron)%&gt;%
+   addPolygons(data = lnd, fill = FALSE) %&gt;% 
+   addLegend(pal = pal, values = ~HDI) %&gt;% 
+   setView(lng = -0.1, 51.5, zoom = 12) %&gt;% 
+   addMiniMap()</code></pre>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

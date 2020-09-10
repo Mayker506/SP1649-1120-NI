@@ -1,0 +1,612 @@
+---
+title: "Mayker Elizondo-b12337-Lab1"
+output:
+  html_document:
+    self_contained: no
+    keep_md: yes
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Librerias utilizadas
+
+```{r}
+
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(sf))
+suppressPackageStartupMessages(library(mapview))
+suppressPackageStartupMessages(library(sp))
+suppressPackageStartupMessages(library(rgdal))
+suppressPackageStartupMessages(library(raster))
+suppressPackageStartupMessages(library(rgeos))
+suppressPackageStartupMessages(library(stars))
+suppressPackageStartupMessages(library(spData))
+suppressPackageStartupMessages(library(spDataLarge))
+suppressPackageStartupMessages(library(tmap))
+suppressPackageStartupMessages(library(leaflet)) 
+suppressPackageStartupMessages(library(ggplot2) )
+library(rmarkdown)
+
+
+
+
+```
+
+# Ejercicio capitulo 1 ----------------------------------------------------
+
+
+**1-Leer el shapefile storms_xyz_feature del directorio en el sf paquete**
+```{r}
+system.file("shape/storms_xyz_feature.shp", package="sf") %>% read_sf() -> storms_xyz_feature
+
+
+```
+**2-Copie este archivo en otro directorio de su computadora y lealo desde alla (nota: un shapefile consta de mas de un archivo!)**
+
+```{r, eval=FALSE}
+storms_xyz_feature1=  st_zm(storms_xyz_feature)
+
+st_write(storms_xyz_feature1, "C:/Users/User/Documents/Mayker/Maestria Profesional/Estadistica Espacial/SP1649-1120-NI/storms_xyz_feature1.shp")
+
+storms_xyz_feature1 = st_read("C:/Users/User/Documents/Mayker/Maestria Profesional/Estadistica Espacial/SP1649-1120-NI/storms_xyz_feature1.shp")
+
+```
+**3-¿Cuántas características contiene este conjunto de datos?**
+
+Destaca por ser un archivo con figuras tipo "Lenetring", el bbox es de xmin:-102.2, ymin:8.3, xmax:0 ymax:59. Además posee una variable adicional llmada Z
+
+```{r}
+storms_xyz_feature
+```
+
+
+ **4-Grafique el conjunto de datos con axes = TRUE(pista: antes de graficar, canalice st_zm para soltar las coordenadas Z y M; mas sobre esto en el capitulo 3 ).**
+
+```{r}
+d=st_zm(storms_xyz_feature)
+
+d %>%  plot(graticule = TRUE, axes = TRUE)
+
+```
+ 
+ 
+ **5-Antes de graficar, canalice el conjunto de datos st_set_crs(4326). A que se debe lo diferente en la trama obtenida?**
+
+```{r}
+d=st_zm(storms_xyz_feature)
+
+   d %>% 
+  st_set_crs(4326) %>%
+  plot(graticule = TRUE, axes = TRUE)
+   
+
+```
+
+con el comando st_zm lo que se hizo fue eliminar la variable z y con st_set_crs(4326) se hace proyecta y se observa  la altitud y latitud*
+
+
+
+# Ejercicio capitulo 2 ----------------------------------------------------
+
+
+**convertir el (x,y) puntos (10,2), (-10,-2),(10,-2) y (0,10) a coordenadas polares (10,2)**   
+```{r}
+
+x=10
+y=2
+
+r1=sqrt((x^2)+(y^2) )
+a=atan((y/x))
+a=((a*180)/pi)
+
+cor <- cbind(r1,a);cor
+
+
+```
+(-10,-2)       
+```{r}
+x=-10
+y=-2
+
+r1=sqrt((x^2)+(y^2) )
+a=atan((y/x))
+a=((a*180)/pi) 
+cor <- cbind(r1,a);cor
+
+```
+
+
+(10,-2) 
+```{r}
+x=10
+y=-2
+
+r1=sqrt((x^2)+(y^2) )
+a=atan((y/x))
+a=((a*180)/pi)  
+cor <- cbind(r1,a);cor
+
+```
+(0,10) 
+```{r}
+x=0
+y=10
+
+r1=sqrt((x^2)+(y^2) )
+a=atan((y/x))
+a=((a*180)/pi)
+cor <- cbind(r1,a);cor
+
+```
+**convertir los puntos polares (r,a) (10,45),(0,100),(5,359) as coordenadas cortecianas**
+
+x=r cos(a)
+y=r sin(a)
+
+(10,45)
+```{r}
+r=10
+a=45
+
+ar=(a*pi)/180
+
+x=r*cos(ar)
+y=r*sin(ar)
+corde <- cbind(x,y);corde
+
+
+```
+
+
+(0,100)
+
+```{r}
+r=0
+a=100
+
+ar=(a*pi)/180
+
+x=r*cos(ar)
+y=r*sin(ar)
+corde <- cbind(x,y);corde
+```
+
+(5,359)
+
+```{r}
+r=5
+a=359
+
+ar=(a*pi)/180
+
+x=r*cos(ar)
+y=r*sin(ar)
+corde <- cbind(x,y);corde 
+```
+
+**•	suponiendo que la Tierra es una esfera con un radio de 6371 km, calcule para (λ,ϕ)(λ,ϕ) señala la distancia del gran círculo entre (10,10)(10,10) y (11,10)(11,10), Entre (10,80)(10,80) y (11,80)(11,80), Entre (10,10)(10,10) y (10,11)(10,11) y entre (10,80)(10,80) y (10,81)(10,81)(unidades: grado). ¿Cuáles son las unidades de distancia?**
+
+la distancia es está en milles de radianes
+```{r}
+r=6371
+
+l1=10
+a1=10
+
+l2=11
+a2=10
+
+a1r=(a1*pi)/180
+l1r=(l1*pi)/180
+
+a2r=(a2*pi)/180
+l2r=(l2*pi)/180
+
+a12=acos( (sin(a1r)*sin(a2r))+((cos(a1r)*cos(a2r))*cos(l1r-l2r)))
+
+a12=((a12*180)/pi) 
+d=(a12*r)/1000
+d
+```
+
+(10,80) y (11,80)
+
+```{r}
+l1=10
+a1=80
+
+l2=11
+a2=80
+
+a1r=(a1*pi)/180
+l1r=(l1*pi)/180
+
+a2r=(a2*pi)/180
+l2r=(l2*pi)/180
+
+
+
+a12=acos( (sin(a1r)*sin(a2r))+((cos(a1r)*cos(a2r))*cos(l1r-l2r)))
+d=(a12*r)/1000
+d
+```
+(10,10) y (10,11) 
+
+```{r}
+l1=10
+a1=10
+
+l2=10
+a2=11
+
+a1r=(a1*pi)/180
+l1r=(l1*pi)/180
+
+a2r=(a2*pi)/180
+l2r=(l2*pi)/180
+
+
+
+a12=acos( (sin(a1r)*sin(a2r))+((cos(a1r)*cos(a2r))*cos(l1r-l2r)))
+d=(a12*r)/1000
+d
+```
+(10,80) y (10,81)
+```{r}
+l1=10
+a1=80
+
+l2=10
+a2=81
+
+a1r=(a1*pi)/180
+l1r=(l1*pi)/180
+
+a2r=(a2*pi)/180
+l2r=(l2*pi)/180
+
+
+
+a12=acos( (sin(a1r)*sin(a2r))+((cos(a1r)*cos(a2r))*cos(l1r-l2r)))
+d=(a12*r)/1000
+d
+```
+
+
+# Ejercicio 4.4 -----------------------------------------------------------
+
+**NDVI, indice de vegetacion diferenciado normalizado, se calcula como (NIR-R) / (NIR + R), siendo NIR el infrarrojo cercano y R la banda roja. Lea el L7_ETMs.tif archivo en el objeto xy distribuya las dimensiones de la banda sobre los atributos por split(x, "band"). Luego, calcule el NDVI usando una expresiÃ³n que use los atributos NIR (banda 4) y R (banda 3) directamente.**
+
+```{r}
+tif = system.file("tif/L7_ETMs.tif", package = "stars")
+x = read_stars(tif)
+x
+plot(x)
+
+```
+
+```{r}
+xx=split(x, "band")
+resultado_ndvi= (xx[4]-xx[3])/(xx[4]+xx[3])
+resultado_ndvi
+plot(resultado_ndvi)
+```
+
+**Calcule NDVI para la imagen S2, usando st_applyy una funcion ndvi = function(x) (x[4]-x[3])/(x[4]+x[3]). Trace el resultado y escriba el resultado en un GeoTIFF. Explique la diferencia en tiempo de ejecuciÃ³n entre trazar y escribir.**
+
+```{r}
+ndvi = function(x) (x[4]-x[3])/(x[4]+x[3])
+resultado_dos=st_apply(x, c("x", "y"), ndvi)
+resultado_dos
+plot(resultado_dos)
+```
+se guarda el resultado
+```{r}
+
+write_stars(resultado_dos, "C:/Users/User/Documents/Mayker/Maestria Profesional/Estadistica Espacial/resultado_dos.tif")
+
+```
+
+
+**1.	Utilice st_transform para transformar el starsobjeto leido L7_ETMs.tifen EPSG 4326. Imprima el objeto. ¿Es esta una cuadricula regular? Grafique la primera banda usando argumentos axes=TRUEy border=NA, y explique por quÃ© esto lleva tanto tiempo.**
+
+```{r}
+new = st_crs(4326)
+y = st_transform(x, new)
+y
+
+```
+
+-despues de hacer la transformacion se tiene como resultado una figura curvilinea.
+-cuando convertimos o transformamos datos tipo raster regular en otro sistema de referencia de coordenadas, se volverá curvilineo a menos que volvamos a muestrear; el remuestreo siempre se realiza a costa de alguna pérrdida de datos y no es reversible
+
+
+Grafico de la primer banda
+```{r}
+
+#plot(y)
+yy=split(y, "band")
+plot(yy[1], axes=TRUE, border=NA)
+
+
+
+```
+
+Toma mucho tiempo porque los datos de tif/L7_ETMs.tif son tipo raster y al aplicarle una transformación le estamos cambiando a otro sistema de coordenadas lo que genera perdida de datos.
+
+
+-tilice st_warppara deformar el L7_ETMs.tif a un objeto a EPSG 4326 y graficar el objeto resultante con axes=TRUE. ¿Por que el grafico se crea mucho mas rapido que con st_transform?
+
+
+
+```{r}
+
+new = st_crs(4326)
+y2 = st_warp(x, crs = new)
+
+plot(y2, axes=TRUE, border=NA)
+
+
+```
+
+**La expresionn st_warp  realiza el metodo de remuestreo del vecino mas cercano (metodo = "cerca"), que es el predeterminado,con st_warp vuelvo a una figura regular, pero hay perdida de informacion **
+
+
+
+# Ejercicio capitulo 6 ----------------------------------------------------
+
+
+Agregue una variable al ncconjunto de datos mediante nc$State = "North Carolina". ¿Que valor deberia adjuntar a esta variable para la relacion atributo-geometrica (agr)?
+
+```{r}
+
+nc <- system.file("gpkg/nc.gpkg", package="sf") %>%
+   read_sf() %>%
+   st_transform(32119)
+
+plot(nc)
+
+nc$State = "North Carolina"
+```
+
+La variable STATE se debe agregar de manera con identity, ya que es una variables que identifica a la geometria como un todo 
+
+Cree un nuevo sf objeto a partir de la geometria obtenida por st_union(nc) y asigne "North Carolina"a la variable State. Â¿que AGR puede asignar ahora a esta variable de atributo?
+
+
+```{r}
+# nc10 <- nc %>% select(BIR74, SID74, State) %>%
+#    st_set_agr(c(BIR74 = "aggregate", SID74 = "aggregate", State = "identity"))
+# 
+# plot(nc10)
+# 
+
+
+```
+
+**Cree un nuevo sf objeto a partir de la geometria obtenida por st_union(nc) y asigne "North Carolina"a la variable State. Â¿que AGR puede asignar ahora a esta variable de atributo?**
+
+```{r}
+vv=st_union(nc)
+vvv=vv %>% st_sf()
+vvvv=vvv%>%st_transform(32119)
+vvvv$State = "North Carolina"
+plot(vvvv)
+```
+```{r}
+
+vv1=st_union(nc, by_feature=TRUE)
+vvv1=vv1 %>% st_sf()
+vvvv1=vvv1%>%st_transform(32119)
+vvvv1$State = "North Carolina"
+plot(vvvv1)
+```
+
+ Esa variable se puede agregar como identity, ya que no cambia para las geometrias
+
+**use st_area para agregar una variable con nombre area a nc. Compare las variables area y AREA en el conjunto de datos nc. ¿Cuáles son las unidades de AREA? ¿Están relacionados linealmente las dos variables? Si hay discrepancias, ¿cuál podría ser la causa?**
+```{r}
+d=st_area(nc)
+
+nc$area_cal=d
+
+nc1 <- head(cbind(nc$AREA, nc$area_cal, round ((nc$area_cal/10000000000),3) ) )
+nc1
+```
+La variable AREA parece estar dividida entre 10 000 000 000, ya que al dividirla entra esa cifra da muy similar a la variable de la base de datos
+
+
+**¿La areavariable es intensiva o extensiva? ¿Es su agr igual a constanta, identidad aggregate?**
+
+la variable area es extensica 
+Ademas se puede agragar con un tipo agregado 
+
+   
+**Busque el nombre del condado que contiene POINT(-78.34046 35.017)**
+
+```{r}
+nc_4326 <- system.file("gpkg/nc.gpkg", package="sf") %>%
+   read_sf() %>%
+   st_transform(4326)
+
+punto<- st_point( c( -78.34046, 35.017 ) )
+res <- st_contains(nc_4326, punto)
+res <- summary(res) 
+res_1 <- as.numeric( res[,1])
+pos <- which( res_1==1 )
+nc_4326$NAME[pos]
+```
+
+**Busque los nombres de todos los condados con limites que tocan el Sampson**
+
+```{r}
+sampson_geo <- nc_4326$geom[pos]
+#res_2 <- st_intersection(nc_4326, sampson_geo)
+res_2 <- st_intersection(nc_4326, sampson_geo)
+res_2 <- res_2[ res_2$NAME!='Sampson',    ]; res_2$NAME
+
+
+
+```
+**Enumere los nombres de todos los condados que se encuentran a menos de 50 km del condado Sampson.**
+
+```{r}
+res_3 <- st_is_within_distance(nc_4326, sampson_geo, dist = 50000)
+res_3 <- summary(res_3) 
+res_3 <- as.numeric( res_3[,1])
+pos <- which( res_3==1 )
+nc_4326$NAME[pos]
+
+```
+
+# Ejercicio 8 -----------------------------------------------------------
+
+```{r}
+africa = world %>% 
+   filter(continent == "Africa", !is.na(iso_a2)) %>% 
+   left_join(worldbank_df, by = "iso_a2") %>% 
+   dplyr::select(name, subregion, gdpPercap, HDI, pop_growth) %>% 
+   st_transform("+proj=aea +lat_1=20 +lat_2=-23 +lat_0=0 +lon_0=25")
+
+zion = st_read((system.file("vector/zion.gpkg", package = "spDataLarge")))
+
+data(nlcd, package = "spDataLarge")
+```
+
+**Cree un mapa que muestre la distribución geográfica del Índice de Desarrollo Humano ( HDI) en África con gráficos base (pista: uso plot()) y paquetes tmap (pista: uso tm_shape(africa)  ...).**
+
+
+
+
+Algunos otros mapas paquetes que se puede usar son:
+
+ggplot2:2	
+googleway
+
+tmap:	Thematic Maps
+
+rasterVis:Visualization Methods for Raster Data
+
+```{r}
+# Uso de plot
+#plot(africa)
+plot(africa[4])
+#plot(st_geometry(africa) , col = africa$HDI)
+
+```
+Uso de tm_shape
+```{r}
+tm_shape(africa)+ tm_fill(col = "HDI")
+```
+
+**Extienda el tmap creado para el ejercicio anterior para que la leyenda tenga tres bins: “Alto” (por HDIencima de 0,7), “Medio” ( HDIentre 0,55 y 0,7) y “Bajo” ( HDIpor debajo de 0,55).**
+**•	Bonificación: mejore la estética del mapa, por ejemplo, cambiando el título de la leyenda, las etiquetas de clase y la paleta de colores.**
+
+```{r}
+
+africa = africa %>% mutate(rango_HDI=case_when(HDI<0.55~'bajo',
+                                               HDI>=0.55 & HDI<0.7  ~'medio',
+                                               HDI>0.7 ~'alto',
+                                               TRUE~'nd'))
+
+
+map1=tm_shape(africa)+ tm_fill(col = "rango_HDI")+tm_style("classic") + tm_layout(title = "Africa por nivel de HDI") +tm_layout(scale = 2)
+map1
+
+```
+**Represente africa en las subregiones en el mapa. Cambie la paleta de colores predeterminada y el título de la leyenda. A continuación, combine este mapa y el mapa creado en el ejercicio anterior en un solo gráfico.**
+
+
+```{r}
+map2=tm_shape(africa)+ tm_fill(col = "subregion", palette = "BuGn") + tm_layout(title = "Africa por subregiones")
+map2                   
+
+```
+```{r}
+tmap_arrange(map1, map2)
+```
+#4-Crea un mapa de cobertura terrestre del Parque Nacional Zion.
+
+```{r}
+
+plot(zion)
+#tm_shape(zion)+tm_fill()+tm_fill()
+
+
+```
+
+**Cree mapas de facetas de países de África oriental:**
+**•	Con una faceta que muestra el IDH y la otra que representa el crecimiento de la población (pista: usando variables HDIy pop_growth, respectivamente)**
+**•	Con un 'múltiplo pequeño' por país**
+
+
+
+
+```{r}
+
+
+africa_Oriental=africa %>% filter(subregion=='Eastern Africa')
+
+africa_Oriental_HDI=africa_Oriental
+africa_Oriental_HDI$faceta='HDI'
+africa_Oriental_HDI$indicador=africa_Oriental_HDI$HDI
+
+africa_Oriental_popg=africa_Oriental
+africa_Oriental_popg$faceta='pop_growth'
+africa_Oriental_popg$indicador=africa_Oriental_popg$pop_growth
+
+
+d=rbind(africa_Oriental_HDI,africa_Oriental_popg)
+
+
+
+tm_shape(africa_Oriental) +
+   tm_polygons()+
+   tm_shape(d)+
+   tm_symbols(col = "black", border.col = "white", size =c("indicador") )+
+   tm_facets(by = "faceta", nrow = 2, free.coords = TRUE)
+
+
+```
+
+
+
+**Crea un mapa interactivo de África:**
+**•	Con tmap**
+**•	Con mapview**
+**•	Con folleto**
+**•	Bonificación: para cada enfoque, agregue una leyenda (si no se proporciona automáticamente) y una barra de escala**
+
+Con tmap
+```{r, eval=FALSE}
+map0=tm_shape(africa)+ tm_fill(col = "subregion")
+
+tmap_mode("view")
+map0
+```
+Con mapview
+
+```{r, eval=FALSE}
+
+
+mapview::mapview(africa)
+```
+
+
+
+
+con leaflet
+```{r ,eval=FALSE}
+pal = colorNumeric("RdYlBu", domain = africa$HDI)
+
+leaflet(data = africa)%>% 
+   addProviderTiles(providers$CartoDB.Positron)%>%
+   addPolygons(data = lnd, fill = FALSE) %>% 
+   addLegend(pal = pal, values = ~HDI) %>% 
+   setView(lng = -0.1, 51.5, zoom = 12) %>% 
+   addMiniMap()
+```
+
