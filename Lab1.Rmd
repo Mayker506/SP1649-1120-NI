@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "LAB 1"
 output:
    html_document:
       self_contained: false
