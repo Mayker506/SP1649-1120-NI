@@ -1,10 +1,9 @@
 ---
-title: "LAB 1"
+title: "Mayker Elizondo-b12337-Lab1"
 output:
-   html_document:
-      self_contained: false
-      keep_md: true
-  
+  html_document:
+    self_contained: no
+    keep_md: yes
 
 ---
 
@@ -29,6 +28,7 @@ suppressPackageStartupMessages(library(spDataLarge))
 suppressPackageStartupMessages(library(tmap))
 suppressPackageStartupMessages(library(leaflet)) 
 suppressPackageStartupMessages(library(ggplot2) )
+library(rmarkdown)
 
 
 
@@ -101,8 +101,9 @@ y=2
 r1=sqrt((x^2)+(y^2) )
 a=atan((y/x))
 a=((a*180)/pi)
-r1
-a
+
+cor <- cbind(r1,a);cor
+
 
 ```
 (-10,-2)       
@@ -113,8 +114,8 @@ y=-2
 r1=sqrt((x^2)+(y^2) )
 a=atan((y/x))
 a=((a*180)/pi) 
-r1
-a
+cor <- cbind(r1,a);cor
+
 ```
 
 
@@ -126,8 +127,8 @@ y=-2
 r1=sqrt((x^2)+(y^2) )
 a=atan((y/x))
 a=((a*180)/pi)  
-r1
-a
+cor <- cbind(r1,a);cor
+
 ```
 (0,10) 
 ```{r}
@@ -137,8 +138,8 @@ y=10
 r1=sqrt((x^2)+(y^2) )
 a=atan((y/x))
 a=((a*180)/pi)
-r1
-a
+cor <- cbind(r1,a);cor
+
 ```
 **convertir los puntos polares (r,a) (10,45),(0,100),(5,359) as coordenadas cortecianas**
 
@@ -154,8 +155,8 @@ ar=(a*pi)/180
 
 x=r*cos(ar)
 y=r*sin(ar)
-x
-y 
+corde <- cbind(x,y);corde
+
 
 ```
 
@@ -170,8 +171,7 @@ ar=(a*pi)/180
 
 x=r*cos(ar)
 y=r*sin(ar)
-x
-y 
+corde <- cbind(x,y);corde
 ```
 
 (5,359)
@@ -184,12 +184,12 @@ ar=(a*pi)/180
 
 x=r*cos(ar)
 y=r*sin(ar)
-x
-y 
+corde <- cbind(x,y);corde 
 ```
 
 **•	suponiendo que la Tierra es una esfera con un radio de 6371 km, calcule para (λ,ϕ)(λ,ϕ) señala la distancia del gran círculo entre (10,10)(10,10) y (11,10)(11,10), Entre (10,80)(10,80) y (11,80)(11,80), Entre (10,10)(10,10) y (10,11)(10,11) y entre (10,80)(10,80) y (10,81)(10,81)(unidades: grado). ¿Cuáles son las unidades de distancia?**
 
+la distancia es está en milles de radianes
 ```{r}
 r=6371
 
@@ -206,7 +206,7 @@ a2r=(a2*pi)/180
 l2r=(l2*pi)/180
 
 a12=acos( (sin(a1r)*sin(a2r))+((cos(a1r)*cos(a2r))*cos(l1r-l2r)))
-#a12
+
 a12=((a12*180)/pi) 
 d=(a12*r)/1000
 d
@@ -230,9 +230,6 @@ l2r=(l2*pi)/180
 
 
 a12=acos( (sin(a1r)*sin(a2r))+((cos(a1r)*cos(a2r))*cos(l1r-l2r)))
-a12=((a12*180)/pi) 
-a12
-
 d=(a12*r)/1000
 d
 ```
@@ -254,9 +251,6 @@ l2r=(l2*pi)/180
 
 
 a12=acos( (sin(a1r)*sin(a2r))+((cos(a1r)*cos(a2r))*cos(l1r-l2r)))
-a12=((a12*180)/pi) 
-a12
-
 d=(a12*r)/1000
 d
 ```
@@ -277,10 +271,6 @@ l2r=(l2*pi)/180
 
 
 a12=acos( (sin(a1r)*sin(a2r))+((cos(a1r)*cos(a2r))*cos(l1r-l2r)))
-a12=((a12*180)/pi) 
-a12
-
-
 d=(a12*r)/1000
 d
 ```
@@ -488,6 +478,18 @@ data(nlcd, package = "spDataLarge")
 
 **Cree un mapa que muestre la distribución geográfica del Índice de Desarrollo Humano ( HDI) en África con gráficos base (pista: uso plot()) y paquetes tmap (pista: uso tm_shape(africa)  ...).**
 
+
+
+
+Algunos otros mapas paquetes que se puede usar son:
+
+ggplot2:2	
+googleway
+
+tmap:	Thematic Maps
+
+rasterVis:Visualization Methods for Raster Data
+
 ```{r}
 # Uso de plot
 #plot(africa)
@@ -569,9 +571,7 @@ tm_shape(africa_Oriental) +
 
 
 ```
-**Sobre la base de los ejemplos de mapas de facetas anteriores, cree mapas animados de África Oriental:**
-**•	Mostrando primero la distribución espacial de las puntuaciones del IDH y luego el crecimiento de la población**
-**•	Mostrando cada país en orden**
+
 
 
 **Crea un mapa interactivo de África:**
@@ -581,23 +581,32 @@ tm_shape(africa_Oriental) +
 **•	Bonificación: para cada enfoque, agregue una leyenda (si no se proporciona automáticamente) y una barra de escala**
 
 Con tmap
-```{r}
-map0=tm_shape(africa)+ tm_fill()
+```{r, eval=FALSE}
+map0=tm_shape(africa)+ tm_fill(col = "subregion")
 
 tmap_mode("view")
-map2
+map0
 ```
 Con mapview
 
-```{r}
-# mapview::mapview(africa)
+```{r, eval=FALSE}
+
+
+mapview::mapview(africa)
 ```
 
 
 
 
+con leaflet
+```{r ,eval=FALSE}
+pal = colorNumeric("RdYlBu", domain = africa$HDI)
 
-```{r}
-
+leaflet(data = africa)%>% 
+   addProviderTiles(providers$CartoDB.Positron)%>%
+   addPolygons(data = lnd, fill = FALSE) %>% 
+   addLegend(pal = pal, values = ~HDI) %>% 
+   setView(lng = -0.1, 51.5, zoom = 12) %>% 
+   addMiniMap()
 ```
 
