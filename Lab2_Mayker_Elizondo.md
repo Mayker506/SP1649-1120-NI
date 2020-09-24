@@ -9,94 +9,52 @@ output:
 
 
 
+
+El primer autor inicia con unos delitos de Londres, en una primera instancia se enfrenta al problema de observar observaciones repetidas para un mismo delito, en donde menciona que no tiene suficiente información para saber cual es la forma adecuada de tratarlo, en el sentido que se puede tratar que un delito está en dos categorías o un delito fue cometido por dos personas distintas y otras posibles opciones. Otro de los puntos que desarrolla el autor y  parte del supuesto que es, es más interesante investigar los delitos de Gran Londres, el centro de Londres, para esto utiliza un shapefile que tiene la delimitación del área en donde él quiere trabajar.
+
+
+Posterior y delimitar la información del Gran Londres, inicia con un análisis descriptivo de la información, en este punto inicialmente saca un promedio 2D, que es básicamente un promedio de la longitud y un promedio de la latitud, además cálcula un indicador de desviación estándar también en 2D. En este punto es muy  interesante en el sentido que con el promedio se obtiene el centro en donde se ubican los delitos y con la desviación estándar un radio que da una idea de la dispersión y que especialmente en el mapa genera mucho valor.
+
+Es importante destacar que en el punto de graficar la desviación estandar, se tienen dos opciones, primera fue graficar este indicador con la fórmula general, la segunda hacer grafico con la desviación de la latitud y longitud por aparte, en el primer caso se obtiene un circulo y en el segundo un eclipse.
+
+
+El siguiente paso que dio el autor fue centrarse puramente en los delitos de drogas y además de eliminar los duplicados esto porque asumió que se deben a un mismo delito.
+
+
+En este siguiente paso trabajó con el Spatstat, 
+
+En este parte de la investigación lo que busca son patrones de puntos, que los define con puntos en una ventana o área determinada. Para este paso se apoyó en la funciónowin para encontrar esas ventanas.
+
+
+Un patrón de puntos se define como una serie de eventos en un área o ventana de observación determinada. Por tanto, es extremadamente importante definir con precisión esta ventana.
+
+Posterior de haber definido esas ventanas menciona que lo que corresponde es definir una medida de intensidad en cada una de las ventanas, para esto comenta que la medida adecuada es cantidad de delitos pos metros cuadrados, para esto hizo una transformación de los datos y posteriormente hizo el cálculo de la métrica.
+
+
+En un siguiente paso el autor indica que lo interesante consiste generar la métrica de cantidad de delitos para los "condados" en esa linea lo que hace es un hacer un ciclo para sacar la cantidad y la delimitación de cada "condado". A partir de este condado se obtiene un grafico de barras en donde se observa que brent es donde hay una mayor cantidad de delitos por metro cuadrado, seguidamente de Lambeth.
+
+Posterior a obtener esta grafico de barras, mediante un función de kernel también genera la intensidad, en este punto menciona que para la función de kernel se debe definir el ancho de banda y que no hay alguna regla, si h es muy alto se pueden perder elementos importantes y si es muy pequeño se puede hacer muy ruidosa.
+
+***Aleatoriedad espacial completa***
+
+
+Después de haber definido los puntos, el autor menciona que es importante definir si hay aleatoriedad o no, define no alteridad como la ubicación de puntos con una densidad mayor que la promedio para esto se apoya en la función G del paquete Spatstat. con esta función lo que se busca es encontrar la distribución de los datos y con ello ver si responde o no un proceso aleatorio.
+
+En general concluye que no es un proceso aleatorio y que hay patrones que dan evidencia de que en ciertos lugares se comenten más delitos.
+En resumen el autor se plantea investigar patrones espaciales de los delitos de Gran Londres, inicialmente con todos los datos sacó medidas descriptivas para todos los delitos, luego se enfocó solo en los delitos de drogas, en este punto da un siguiente paso y saca la cantidad de delitos por metro cuadrado, es decir la densidad, para esto busca el mundo ideal y es hacerlo por  "condado", en donde obtiene el top con mayor densidad, luego con una función de kernel genera gráficos de tipo de calor y se aprecia claramente una patrón espacial en los delitos de drogas y 
+por lo último o confirma con función G que arroja que como resultado que los datos no se distribuyen de manera aleatorio, sino que responden a un patrón espacial.
+
 Librerias
 
 
 ```r
-library(sp)
-library(spatstat)
-```
-
-```
-## Loading required package: spatstat.data
-```
-
-```
-## Loading required package: nlme
-```
-
-```
-## Loading required package: rpart
-```
-
-```
-## 
-## spatstat 1.64-1       (nickname: 'Help you I can, yes!') 
-## For an introduction to spatstat, type 'beginner'
-```
-
-```
-## 
-## Note: spatstat version 1.64-1 is out of date by more than 4 months; we recommend upgrading to the latest version.
-```
-
-```r
-library(raster)
-```
-
-```
-## 
-## Attaching package: 'raster'
-```
-
-```
-## The following objects are masked from 'package:spatstat':
-## 
-##     area, rotate, shift
-```
-
-```
-## The following object is masked from 'package:nlme':
-## 
-##     getData
-```
-
-```r
-library(maptools)
-```
-
-```
-## Checking rgeos availability: TRUE
-```
-
-```r
-library(plotrix)
-```
-
-```
-## 
-## Attaching package: 'plotrix'
-```
-
-```
-## The following objects are masked from 'package:spatstat':
-## 
-##     hexagon, rescale
-```
-
-```r
-library(rgeos)
-```
-
-```
-## rgeos version: 0.5-3, (SVN revision 634)
-##  GEOS runtime version: 3.8.0-CAPI-1.13.1 
-##  Linking to sp version: 1.4-2 
-##  Polygon checking: TRUE
-```
-
-```r
-library(readr)
+suppressPackageStartupMessages(library(sp))
+suppressPackageStartupMessages(library(spatstat))
+suppressPackageStartupMessages(library(raster))
+suppressPackageStartupMessages(library(maptools))
+suppressPackageStartupMessages(library(plotrix))
+suppressPackageStartupMessages(library(rgeos))
+suppressPackageStartupMessages(library(readr))
 ```
 
 
@@ -172,7 +130,7 @@ length(unique(zero[,1]))
 ```
 
 ```r
-download.file("http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_1_states_provinces.zip",destfile="ne_10m_admin_1_states_provinces.zip")
+# download.file("http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_1_states_provinces.zip",destfile="ne_10m_admin_1_states_provinces.zip")
 unzip("ne_10m_admin_1_states_provinces.zip",exdir="NaturalEarth")
 border <- shapefile("NaturalEarth/ne_10m_admin_1_states_provinces.shp")
 GreaterLondon <- border[paste(border$region)=="Greater London",]
