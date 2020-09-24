@@ -1,0 +1,12 @@
+---
+title: "Mayker Elizondo-Lab 2"
+  html_document:
+    self_contained: no
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
