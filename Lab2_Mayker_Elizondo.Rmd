@@ -1,9 +1,10 @@
 ---
 title: "Lab 2-B12337"
 output:
-  html_document:
-    self_contained: no
-    keep_md: yes
+   github_document:
+    toc: TRUE
+    toc_depth: 2
+    
 ---
 
 ```{r setup, include=FALSE}
