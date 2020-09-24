@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-***Metodos de investigación y preguntas de investigación ***
+**Metodos de investigación y preguntas de investigación **
 
 
 El primer autor inicia con unos delitos de Londres, en una primera instancia se enfrenta al problema de observar observaciones repetidas para un mismo delito, en donde menciona que no tiene suficiente información para saber cual es la forma adecuada de tratarlo, en el sentido que se puede tratar que un delito está en dos categorías o un delito fue cometido por dos personas distintas y otras posibles opciones. Otro de los puntos que desarrolla el autor y  parte del supuesto que es, es más interesante investigar los delitos de Gran Londres, el centro de Londres, para esto utiliza un shapefile que tiene la delimitación del área en donde él quiere trabajar.
@@ -39,7 +39,7 @@ En un siguiente paso el autor indica que lo interesante consiste generar la mét
 
 Posterior a obtener esta grafico de barras, mediante un función de kernel también genera la intensidad, en este punto menciona que para la función de kernel se debe definir el ancho de banda y que no hay alguna regla, si h es muy alto se pueden perder elementos importantes y si es muy pequeño se puede hacer muy ruidosa.
 
-**Aleatoriedad espacial completa**
+*Aleatoriedad espacial completa*
 
 
 Después de haber definido los puntos, el autor menciona que es importante definir si hay aleatoriedad o no, define no alteridad como la ubicación de puntos con una densidad mayor que la promedio para esto se apoya en la función G del paquete Spatstat. con esta función lo que se busca es encontrar la distribución de los datos y con ello ver si responde o no un proceso aleatorio.
