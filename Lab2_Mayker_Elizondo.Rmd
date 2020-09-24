@@ -1,5 +1,6 @@
 ---
 title: "Lab 2-B12337"
+author: "Mayker Elizondo"
 output:
    github_document:
     toc: TRUE
@@ -12,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-**Metodos de investigación y preguntas de investigación **
+**Metodos de investigación y preguntas de investigación**
 
 
 El primer autor inicia con unos delitos de Londres, en una primera instancia se enfrenta al problema de observar observaciones repetidas para un mismo delito, en donde menciona que no tiene suficiente información para saber cual es la forma adecuada de tratarlo, en el sentido que se puede tratar que un delito está en dos categorías o un delito fue cometido por dos personas distintas y otras posibles opciones. Otro de los puntos que desarrolla el autor y  parte del supuesto que es, es más interesante investigar los delitos de Gran Londres, el centro de Londres, para esto utiliza un shapefile que tiene la delimitación del área en donde él quiere trabajar.
@@ -49,6 +50,9 @@ En general concluye que no es un proceso aleatorio y que hay patrones que dan ev
 En resumen el autor se plantea investigar patrones espaciales de los delitos de Gran Londres, inicialmente con todos los datos sacó medidas descriptivas para todos los delitos, luego se enfocó solo en los delitos de drogas, en este punto da un siguiente paso y saca la cantidad de delitos por metro cuadrado, es decir la densidad, para esto busca el mundo ideal y es hacerlo por  "condado", en donde obtiene el top con mayor densidad, luego con una función de kernel genera gráficos de tipo de calor y se aprecia claramente una patrón espacial en los delitos de drogas y 
 por lo último o confirma con función G que arroja que como resultado que los datos no se distribuyen de manera aleatorio, sino que responden a un patrón espacial.
 
+
+
+***Código***
 Librerias
 
 ```{r}
@@ -78,6 +82,11 @@ coordinates(data)=~Longitude+Latitude
 zero <- zerodist(data)
 length(unique(zero[,1]))
 ```
+
+
+En el siguiente código lo que se hace descargar es descargar un shp que tiene la delimitación de Gran Londres y así trabajar solo con está area, después de haber descargado el arhivo, los delitos que quedan con NA posterior hacer el cruce son eliminados son elimados ya que son los que no están en en Gran Londres.
+Por último se hace el grafico del área utilizada con la cantidad de delitos.
+
 ```{r}
 
 # download.file("http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_1_states_provinces.zip",destfile="ne_10m_admin_1_states_provinces.zip")
@@ -98,6 +107,7 @@ legend(x=-0.53,y=51.41,pch="+",col=unique(as.factor(data.London$Crime.type)),leg
 ```
 
 
+En este punto está sacando el promedio para la altitud y la latitud y luuego saca la desviación estándar.
 
 ```{r}
 #Summary statistics for point patterns  
@@ -107,6 +117,8 @@ mean_centerX <- mean(data.London@coords[,1])
 mean_centerY <- mean(data.London@coords[,2]) 
 ```
 
+
+Saca la desvición estándar para cada cordenada
 ```{r}
 #Similarly we can use the function sd() to determine the standard deviation of X and Y  
 standard_deviationX <- sd(data.London@coords[,1])  
@@ -115,7 +127,7 @@ standard_deviationY <- sd(data.London@coords[,2])
 ```
 
 
-
+En este punto genera ya una desviación estandar unificada.
 ```{r}
 #This is the formula to compute the standard distance  
 standard_distance <- sqrt(sum(((data.London@coords[,1]-mean_centerX)^2+(data.London@coords[,2]-mean_centerY)^2))/(nrow(data.London)))  
@@ -126,6 +138,7 @@ standard_distance <- sqrt(sum(((data.London@coords[,1]-mean_centerX)^2+(data.Lon
 
 
 
+En el siguiente código hace un gráfico de la área y los puntos de los delitos, pero además le agrega el promedio de los puntos y la desviación estandar general cálculada en el punto anterior.
 
 ```{r}
 #jpeg("PP_Circle.jpeg",2500,2000,res=300)  
@@ -135,6 +148,7 @@ points(mean_centerX,mean_centerY,col="red",pch=16)
 draw.circle(mean_centerX,mean_centerY,radius=standard_distance,border="red",lwd=2)  
 #dev.off()  
 ```
+El autor menciona que en el punto anterior ambas desviaciones reciben el mismo peso, al poner cada desviación por aparte ya gráfico un elipse
 
 ```{r}
 #jpeg("PP_Ellipse.jpeg",2500,2000,res=300)  
@@ -148,7 +162,7 @@ draw.ellipse(mean_centerX,mean_centerY,a=standard_deviationX,b=standard_deviatio
 
 
 
-
+El siguiente peso fue eliminar los valores repetidos y además trabajar solo con los delitos de drogas, eso se hace en el siguiente código
 
 ```{r}
 #Working with spatstat  
@@ -156,6 +170,7 @@ Drugs <- data.London[data.London$Crime.type==unique(data.London$Crime.type)[3],]
 Drugs <- remove.duplicates(Drugs) 
 ```
 
+Para sacar un indicar de densidad de delitos por metro cuadrado hace la siguiente transformación .
 
 ```{r}
 #Transform GreaterLondon in UTM  
@@ -165,14 +180,14 @@ Drugs.UTM <- spTransform(Drugs,CRS("+init=epsg:32630"))
 
 ```
 
-
+Estos indicaores de densidad se cálculan  es un espacio determinado y para eso se utiliza la funcion owin, para calcular la ventanas.
 ```{r}
 #Transforming the SpatialPolygons object into an owin object for spatstat, using a function in maptools  
 window <- as.owin(GreaterLondonUTM)  
 
 ```
 
-
+en el siguiente código incorpora esas ventanas en el los datos
 ```{r}
 #Now we can extract one crime and   
 Drugs.ppp <- ppp(x=Drugs.UTM@coords[,1],y=Drugs.UTM@coords[,2],window=window)  
@@ -181,7 +196,7 @@ Drugs.ppp <- ppp(x=Drugs.UTM@coords[,1],y=Drugs.UTM@coords[,2],window=window)
 
 
 
-
+Se cálcula el relación de delitos por metro cuadrado.
 
 ```{r}
 #Calculate Intensity  
@@ -199,7 +214,7 @@ summary(Drugs.ppp)$intensity
 
 
 ```
-
+El siguiente paso fue gráficar la indicador de delitos por metros cuadrado y eso se hace en el siguiente código
 ```{r}
 #Quadrat counting Intensity  
 #jpeg("PP_QuadratCounting.jpeg",2500,2000,res=300)  
@@ -211,6 +226,7 @@ plot(quadratcount(Drugs.ppp, nx = 4, ny = 4),add=T,col="red")
 
 
 
+El autor menciona que las areas tiene sentido que sean cálcudas según los "condados" y precidamente eso cálcula en siguiente código, mediante un ciclo hace el cálculo de delitos por "condados"
 
 ```{r}
 #Intensity by Borough  
@@ -223,6 +239,7 @@ for(i in unique(GreaterLondonUTM$name)){
 }  
 
 ```
+graficamente el tip de condados con mayores delitos por metro cuadrado se hace en el siguiente código y se observa en el siguiente gráfico.
 
 ```{r}
 
@@ -236,7 +253,7 @@ barplot(Local.Intensity[order(Local.Intensity[,2]),2],names.arg=Local.Intensity[
 ```
 
 
-
+Otra de las técnicas que usó el autor fue mediante una funcion de kernel calcular la desindad y precisamente eso hace en las siguientes líneas
 
 ```{r}
 #Kernel Density (from: Baddeley, A. 2008. Analysing spatial point patterns in R)   
@@ -245,6 +262,8 @@ bw.diggle(Drugs.ppp)
 bw.ppl(Drugs.ppp)  
 bw.scott(Drugs.ppp) 
 ```
+
+Gráficamente los resultados de la función de kernel se observa en las siguientes líneas y se aprecia que si hay un patron espacial en los delitos cometidos
 ```{r}
 #Plotting  
 #jpeg("Kernel_Density.jpeg",2500,2000,res=300)  
@@ -259,7 +278,7 @@ plot(density.ppp(Drugs.ppp, sigma = bw.scott(Drugs.ppp)[1],edge=T),main=paste("h
 ```
 
 
-
+Por último, da un paso mas el autor y mediante la función G, calcula si los delitos tienen un patron aleatroio o no y los resultados se aprecian en el siguiente gráfico, el cual es que no es un patrón aleatorio y todo lo contrario hay un patron espacial.
 
 ```{r}
 
