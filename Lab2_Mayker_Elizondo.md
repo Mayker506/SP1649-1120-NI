@@ -1,6 +1,5 @@
 Lab 2-B12337
 ================
-Mayker Elizondo
 
 **Metodos de investigación y preguntas de investigación**
 
