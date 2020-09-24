@@ -1,12 +1,9 @@
 ---
 title: "Lab 2-B12337"
 output:
-   github_document:
-    toc: TRUE
-    toc_depth: 2
-    
-
-
+  html_document:
+    self_contained: no
+    keep_md: yes
     
 ---
 
