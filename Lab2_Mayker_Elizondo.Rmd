@@ -1,0 +1,238 @@
+---
+title: "Lab 2-B12337"
+output:
+  html_document:
+    self_contained: no
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Librerias
+
+```{r}
+library(sp)
+library(spatstat)
+library(raster)
+library(maptools)
+library(plotrix)
+library(rgeos)
+library(readr)
+
+
+```
+
+
+
+```{r}
+data <- read_csv("C:/Users/User/Documents/Mayker/Maestria Profesional/Estadistica Espacial/Lab 2/london_street.csv")
+data <- data[!is.na(data$Longitude)&!is.na(data$Latitude),]
+str(data)
+```
+
+
+```{r}
+
+coordinates(data)=~Longitude+Latitude
+zero <- zerodist(data)
+length(unique(zero[,1]))
+```
+```{r}
+
+download.file("http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_1_states_provinces.zip",destfile="ne_10m_admin_1_states_provinces.zip")
+unzip("ne_10m_admin_1_states_provinces.zip",exdir="NaturalEarth")
+border <- shapefile("NaturalEarth/ne_10m_admin_1_states_provinces.shp")
+GreaterLondon <- border[paste(border$region)=="Greater London",]
+projection(data)=projection(border)
+overlay <- over(data,GreaterLondon)
+data$over <- overlay$adm1_code
+data.London <- data[!is.na(data$over),]
+#jpeg("PP_plot.jpg",2500,2000,res=300)
+summary(data.London$Crime.type)
+plot(data.London,pch="+",cex=0.5,main="",col=as.factor(data.London$Crime.type))
+plot(GreaterLondon,add=T)
+legend(x=-0.53,y=51.41,pch="+",col=unique(as.factor(data.London$Crime.type)),legend=unique(data.London$Crime.type),cex=0.4)
+#dev.off()
+
+```
+
+
+
+```{r}
+#Summary statistics for point patterns  
+#The coordinates of the mean center are simply the mean value of X and Y  
+#therefore we can use the function mean() to determine their value  
+mean_centerX <- mean(data.London@coords[,1])  
+mean_centerY <- mean(data.London@coords[,2]) 
+```
+
+```{r}
+#Similarly we can use the function sd() to determine the standard deviation of X and Y  
+standard_deviationX <- sd(data.London@coords[,1])  
+standard_deviationY <- sd(data.London@coords[,2])  
+
+```
+
+
+
+```{r}
+#This is the formula to compute the standard distance  
+standard_distance <- sqrt(sum(((data.London@coords[,1]-mean_centerX)^2+(data.London@coords[,2]-mean_centerY)^2))/(nrow(data.London)))  
+
+
+```
+
+
+
+
+
+```{r}
+#jpeg("PP_Circle.jpeg",2500,2000,res=300)  
+plot(data.London,pch="+",cex=0.5,main="")  
+plot(GreaterLondon,add=T)  
+points(mean_centerX,mean_centerY,col="red",pch=16)  
+draw.circle(mean_centerX,mean_centerY,radius=standard_distance,border="red",lwd=2)  
+#dev.off()  
+```
+
+```{r}
+#jpeg("PP_Ellipse.jpeg",2500,2000,res=300)  
+plot(data.London,pch="+",cex=0.5,main="")  
+plot(GreaterLondon,add=T)  
+points(mean_centerX,mean_centerY,col="red",pch=16)  
+draw.ellipse(mean_centerX,mean_centerY,a=standard_deviationX,b=standard_deviationY,border="red",lwd=2)  
+#dev.off()  
+
+```
+
+
+
+
+
+```{r}
+#Working with spatstat  
+Drugs <- data.London[data.London$Crime.type==unique(data.London$Crime.type)[3],]  
+Drugs <- remove.duplicates(Drugs) 
+```
+
+
+```{r}
+#Transform GreaterLondon in UTM  
+GreaterLondonUTM <- spTransform(GreaterLondon,CRS("+init=epsg:32630"))  
+Drugs.UTM <- spTransform(Drugs,CRS("+init=epsg:32630"))  
+
+
+```
+
+
+```{r}
+#Transforming the SpatialPolygons object into an owin object for spatstat, using a function in maptools  
+window <- as.owin(GreaterLondonUTM)  
+
+```
+
+
+```{r}
+#Now we can extract one crime and   
+Drugs.ppp <- ppp(x=Drugs.UTM@coords[,1],y=Drugs.UTM@coords[,2],window=window)  
+
+```
+
+
+
+
+
+```{r}
+#Calculate Intensity  
+Drugs.ppp$n/sum(sapply(slot(GreaterLondonUTM, "polygons"), slot, "area"))  
+
+```
+
+
+
+
+
+```{r}
+#Alternative approach  
+summary(Drugs.ppp)$intensity  
+
+
+```
+
+```{r}
+#Quadrat counting Intensity  
+#jpeg("PP_QuadratCounting.jpeg",2500,2000,res=300)  
+plot(Drugs.ppp,pch="+",cex=0.5,main="Drugs")  
+plot(quadratcount(Drugs.ppp, nx = 4, ny = 4),add=T,col="red")  
+#dev.off()  
+
+```
+
+
+
+
+```{r}
+#Intensity by Borough  
+Local.Intensity <- data.frame(Borough=factor(),Number=numeric())  
+for(i in unique(GreaterLondonUTM$name)){  
+  sub.pol <- GreaterLondonUTM[GreaterLondonUTM$name==i,]  
+  
+  sub.ppp <- ppp(x=Drugs.ppp$x,y=Drugs.ppp$y,window=as.owin(sub.pol))  
+  Local.Intensity <- rbind(Local.Intensity,data.frame(Borough=factor(i,levels=GreaterLondonUTM$name),Number=sub.ppp$n))  
+}  
+
+```
+
+```{r}
+
+colorScale <- color.scale(Local.Intensity[order(Local.Intensity[,2]),2],color.spec="rgb",extremes=c("green","red"),alpha=0.8)  
+
+#jpeg("PP_BoroughCounting.jpeg",2000,2000,res=300)  
+par(mar=c(5,13,4,2))   
+barplot(Local.Intensity[order(Local.Intensity[,2]),2],names.arg=Local.Intensity[order(Local.Intensity[,2]),1],horiz=T,las=2,space=1,col=colorScale)  
+#dev.off()  
+
+```
+
+
+
+
+```{r}
+#Kernel Density (from: Baddeley, A. 2008. Analysing spatial point patterns in R)   
+#Optimal values of bandwidth  
+bw.diggle(Drugs.ppp)  
+bw.ppl(Drugs.ppp)  
+bw.scott(Drugs.ppp) 
+```
+```{r}
+#Plotting  
+#jpeg("Kernel_Density.jpeg",2500,2000,res=300)  
+par(mfrow=c(2,2))  
+plot(density.ppp(Drugs.ppp, sigma = bw.diggle(Drugs.ppp),edge=T),main=paste("h =",round(bw.diggle(Drugs.ppp),2)))  
+plot(density.ppp(Drugs.ppp, sigma = bw.ppl(Drugs.ppp),edge=T),main=paste("h =",round(bw.ppl(Drugs.ppp),2)))  
+plot(density.ppp(Drugs.ppp, sigma = bw.scott(Drugs.ppp)[2],edge=T),main=paste("h =",round(bw.scott(Drugs.ppp)[2],2)))  
+plot(density.ppp(Drugs.ppp, sigma = bw.scott(Drugs.ppp)[1],edge=T),main=paste("h =",round(bw.scott(Drugs.ppp)[1],2)))  
+
+#dev.off()  
+
+```
+
+
+
+
+```{r}
+
+#G Function  
+#jpeg("GFunction.jpeg",2500,2000,res=300)  
+plot(Gest(Drugs.ppp),main="Drug Related Crimes")  
+#dev.off()  
+
+
+```
+
+
+
+
